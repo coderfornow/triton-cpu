@@ -112,5 +112,12 @@ FetchContent_Declare(
   GIT_TAG 93f04d869471ce4d007abaebb8c6a7bc62749f61
 )
 FetchContent_MakeAvailable(sleef)
+# SLEEF's POWER and s390x dispatchers look for the generated sleef.h under
+# CMAKE_BINARY_DIR, which is Triton's build directory when SLEEF is fetched.
+foreach(dispatcher disppower_128_obj disps390x_128_obj)
+  if(TARGET ${dispatcher})
+    target_include_directories(${dispatcher} PRIVATE ${sleef_BINARY_DIR}/include)
+  endif()
+endforeach()
 # Override sleef's output directory with our own
 set_target_properties(sleef PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})

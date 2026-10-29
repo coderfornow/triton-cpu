@@ -8,8 +8,10 @@
 #include "llvm/IR/PassTimingInfo.h"
 #include "llvm/IR/Verifier.h"
 #include "llvm/IRReader/IRReader.h"
+#include "llvm/InitializePasses.h"
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Pass.h"
+#include "llvm/PassRegistry.h"
 #include "llvm/Support/CodeGen.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/Debug.h"
@@ -55,6 +57,11 @@ void initializeHostTarget() {
     if (llvm::InitializeNativeTargetAsmPrinter())
       throw std::runtime_error("LLVM native target assembly printer is not "
                                "available");
+    // The always-inliner does not register itself or the analyses it
+    // requires. The X86 and AArch64 targets register them as a side effect of
+    // their own initialization, but other hosts such as SystemZ do not.
+    llvm::initializeAlwaysInlinerLegacyPassPass(
+        *llvm::PassRegistry::getPassRegistry());
   });
 
   // LLVM's global thread pool is not fork-safe. Triton kernels are small, so

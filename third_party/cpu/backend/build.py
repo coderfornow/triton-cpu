@@ -101,6 +101,10 @@ def _build_cpu_shared_object(name, src, srcdir, libraries, ccflags, source_kind)
         if system == "Linux" and machine in ("aarch64", "arm64"):
             # Arm assembly may need an explicit target to enable host features.
             cpu_flags.append("-mcpu=native")
+        if system == "Linux" and machine == "s390x":
+            # LLVM targets the host CPU, but the assembler defaults to the
+            # base z/Architecture level and rejects vector instructions.
+            cpu_flags.append("-march=native")
     else:
         raise ValueError(f"Unexpected CPU source kind: {source_kind}")
 
