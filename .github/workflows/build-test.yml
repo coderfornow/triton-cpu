@@ -191,6 +191,13 @@ jobs:
           fi
           lit -v "${LIT_TEST_DIR}/TritonCPU"
 
+  build-test-s390x:
+    name: s390x
+    # The IBM-hosted s390x runners serve approved repositories only, so forks
+    # skip this job.
+    if: github.repository == 'triton-lang/triton-cpu'
+    uses: ./.github/workflows/build-test-s390x.yml
+
   build-with-optional-deps:
     name: Build with optional dependencies on GNR Intel x86(fp16, bf16, amx)
     runs-on:
